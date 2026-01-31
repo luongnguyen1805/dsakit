@@ -5,7 +5,10 @@ A small Swift-base macOS utility app that generates **pre-configured local works
 
 The app automates repetitive setup (boilerplate, inputs, templates) and opens a ready-to-run challenge directly in **VS Code**, allowing you to focus on solving problems rather than preparing environments.
 
----
+
+![App Screenshot](assets/screenshot-1.png)
+
+![App Screenshot](assets/screenshot-2.png)
 
 ## Overview
 
@@ -119,4 +122,5 @@ Each problem gets its own folder, making it easy to:
 * Interview preparation
 * Offline training
 * Building a personal archive of solved problems
+
 
