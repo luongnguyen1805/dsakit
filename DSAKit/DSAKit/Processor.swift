@@ -74,7 +74,13 @@ actor Processor {
         let fileManager = FileManager.default
         
         let documentDir = URL(fileURLWithPath: NSString(string:"~/Documents").expandingTildeInPath)
-        let workspaceDir = documentDir.appendingPathComponent("\(problem.source)-\(problem.id)")
+        
+        let containerDir = documentDir.appendingPathComponent("DSAKit")
+        if fileManager.fileExists(atPath: containerDir.path) == false {
+            try fileManager.createDirectory(at: containerDir, withIntermediateDirectories: true)
+        }
+        
+        let workspaceDir = containerDir.appendingPathComponent("\(problem.source)-\(problem.id)")
         
         // 3. Create target directory
         if fileManager.fileExists(atPath: workspaceDir.path) {

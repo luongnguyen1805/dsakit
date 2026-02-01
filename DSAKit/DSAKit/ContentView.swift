@@ -29,12 +29,7 @@ struct ContentView: View {
     
     @StateObject var selectedChallenge = DSAKitApp.ObservableChallenge()
 
-    var urlAddress: Binding<String> {
-        Binding(
-            get: { states.of["\(stateKey).urlAddress"] as? String ?? "" },
-            set: { states.of["\(stateKey).urlAddress"] = $0 }
-        )
-    }
+    @State var urlAddress = ""
         
     @AppStorage("lastSavedBrowsingAddress")
     var lastSavedBrowsingAddress = ""
@@ -92,7 +87,7 @@ struct ContentView: View {
                         }
                         
                         showHomeView = false
-                        urlAddress.wrappedValue = challenge.url
+                        urlAddress = challenge.url
                         lastSavedBrowsingAddress = challenge.url
                         loadURL()
                         
@@ -111,9 +106,9 @@ struct ContentView: View {
             Text(alertMsg)
         }.onAppear {
             
-            if (urlAddress.wrappedValue.lengthOfBytes(using: .utf8) == 0 && lastSavedBrowsingAddress.lengthOfBytes(using: .utf8) > 0) {
+            if (urlAddress.lengthOfBytes(using: .utf8) == 0 && lastSavedBrowsingAddress.lengthOfBytes(using: .utf8) > 0) {
                 
-                urlAddress.wrappedValue = lastSavedBrowsingAddress
+                urlAddress = lastSavedBrowsingAddress
                 loadURL()
             }
             
@@ -139,15 +134,18 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     Spacer()
                         .frame(height: 6)
-                    TextField("Type URL", text: urlAddress)
+                    TextField("Type URL", text: $urlAddress)
                         .textFieldStyle(.plain)
                         .font(.system(size:14))
                         .padding(.horizontal, 5)
                         .focused($isTextFieldFocused)
                         .onSubmit {
                             isTextFieldFocused = false
-                            lastSavedBrowsingAddress = urlAddress.wrappedValue
+                            lastSavedBrowsingAddress = urlAddress
                             loadURL()
+                        }
+                        .onChange(of: webStore.actualUrl) { oldValue, newValue in
+                            urlAddress = newValue
                         }
                     Divider()
                         .padding(.vertical, 2)
@@ -177,7 +175,7 @@ struct ContentView: View {
                         return
                     }
                     
-                    let theUrl = urlAddress.wrappedValue
+                    let theUrl = urlAddress
                     if (!theUrl.starts(with: "https://leetcode.com/problems/")) {
                         alertMsg = "Sorry, the URL not supported!"
                         alertShowing.toggle()
@@ -214,7 +212,7 @@ struct ContentView: View {
                 
                 WebViewRepresentable(
                     webView: webStore.webView,
-                    urlAddress: urlAddress,
+                    urlAddress: $urlAddress,
                     canGoBack: $canGoBack,
                     canGoForward: $canGoForward,
                     loadingProgress: $loadingProgress
@@ -244,7 +242,7 @@ struct ContentView: View {
     
     //MARK: PRIVATE
     private func loadURL(){
-        let _urlAddress = urlAddress.wrappedValue;
+        let _urlAddress = urlAddress;
         
         var urlString = _urlAddress.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -295,34 +293,38 @@ struct ContentView: View {
             let coordinator = Coordinator(self)
             
             coordinator.progressObservation = webView.observe(\.estimatedProgress, options: [.new]) { _, change in
+                
                 DispatchQueue.main.async {
                     let val = change.newValue ?? 0
                     coordinator.parent.loadingProgress = val > 0.9 ? 0 : val
                     
                     coordinator.parent.canGoBack = webView.canGoBack
                     coordinator.parent.canGoForward = webView.canGoForward
-
                 }
+                
             }
             
             return coordinator
         }
         
         class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+            
             let parent: WebViewRepresentable
             var progressObservation: NSKeyValueObservation?
             
             init(_ parent: WebViewRepresentable) {
                 self.parent = parent
             }
-                        
+             
+            //MARK: WKUIDelegate
             func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
                 if let url = navigationAction.request.url {
                     self.parent.webView.load(URLRequest(url: url))
                 }
                 return nil // important
             }
-           
+            
+            //MARK: WKNavigationDelegate
             func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
                 if let url = webView.url?.absoluteString {
                     parent.urlAddress = url
@@ -341,6 +343,7 @@ struct ContentView: View {
                 self.parent.canGoForward = webView.canGoForward
                 self.parent.loadingProgress = 0
             }
+            
         }
     }
 }
