@@ -8,7 +8,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class ChallengeItem: Equatable {
+final class ChallengeItem: Equatable, Identifiable {
     
     static func == (lhs: ChallengeItem, rhs: ChallengeItem) -> Bool {
         lhs.challegeId == rhs.challegeId
@@ -19,6 +19,8 @@ final class ChallengeItem: Equatable {
     var url: String
     var src: String
     var timestamp: Date
+    
+    var id: String {challegeId}
     
     init(challegeId: String, title: String, url: String, src: String, timestamp: Date) {
         self.challegeId = challegeId

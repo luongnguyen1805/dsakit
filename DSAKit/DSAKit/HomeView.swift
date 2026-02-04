@@ -14,6 +14,10 @@ struct HomeView: View {
     
     var body: some View {
         
+        #if DEBUG
+        let _ = Self._printChanges()
+        #endif
+
         VStack() {
             
             Color.clear
@@ -45,7 +49,11 @@ struct HomeView: View {
         @FocusState var isTextFieldFocused: Bool
                 
         var body: some View {
-            
+
+            #if DEBUG
+            let _ = Self._printChanges()
+            #endif
+
             HStack {
                 Text("Gemini API Key: ")
                     .font(.system(size:14))
@@ -80,7 +88,11 @@ struct HomeView: View {
         @Environment(\.modelContext) var modelContext: ModelContext
 
         var body: some View {
-                                    
+                        
+            #if DEBUG
+            let _ = Self._printChanges()
+            #endif
+
             VStack(spacing: 3) {
                 
                 // Header Section

@@ -34,7 +34,7 @@ actor Processor {
     }
     
     //MARK: MAIN
-    func proceed(_ url: String) async throws {
+    func proceed(url: String, pseusoCode: String = "") async throws {
         
         //Get page content
         let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
@@ -42,7 +42,7 @@ actor Processor {
         //Detect {page-id, description}
         let problemInfo = parseForInfo(url: url, src: String(data: data, encoding: .utf8)!)
         
-        let setupCode = try await generateSetupCode(problem: problemInfo)
+        let setupCode = try await generateSetupCode(problem: problemInfo, pseudoCode: pseusoCode)
         
         let workspaceDir = try await setupWorkspace(problem: problemInfo, setupCode: setupCode)
         
@@ -126,7 +126,7 @@ actor Processor {
         return workspaceDir.path
     }
 
-    private func generateSetupCode(problem: ProblemInfo) async throws -> String {
+    private func generateSetupCode(problem: ProblemInfo, pseudoCode: String = "") async throws -> String {
         
         struct GeminiRequest: Codable {
             struct Content: Codable {
@@ -169,6 +169,7 @@ actor Processor {
             .replacingOccurrences(of: "{{PROBLEM_TITLE}}", with: problem.title)
             .replacingOccurrences(of: "{{PROBLEM_SOURCE}}", with: problem.source)
             .replacingOccurrences(of: "{{PROBLEM_DESCRIPTION}}", with: problem.description)
+            .replacingOccurrences(of: "{{PSEUDO_CODE}}", with: pseudoCode)
 
         //TEST
 //        let documentDir = URL(fileURLWithPath: NSString(string:"~/Documents").expandingTildeInPath)

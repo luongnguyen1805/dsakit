@@ -46,6 +46,11 @@ struct ContentView: View {
     var stateKey = ""
             
     var body: some View {
+        
+        #if DEBUG
+        let _ = Self._printChanges()
+        #endif
+
         ZStack {
             mainView
             
@@ -183,12 +188,15 @@ struct ContentView: View {
                     }
                     
                     showProcessingView = true
-                    
+                                        
                     Task {
+                        
+                        let foundPseudoCode = await getPseudoCode()
+                        
                         processor = Processor(geminiAIKey: geminiAPIKey, store: ChallengeStore(context: self.modelContext))
                         
                         do {
-                            try await processor!.proceed(theUrl)
+                            try await processor!.proceed(url: theUrl, pseusoCode: foundPseudoCode)
                         } catch {
                             alertMsg = "Sorry, something went wrong"
                             alertShowing = true
@@ -224,14 +232,7 @@ struct ContentView: View {
                     canGoForward = webStore.webView.canGoForward
                 }
                 
-                if loadingProgress > 0 {
-                    ProgressView(value: loadingProgress)
-                        .progressViewStyle(.linear)
-                        .scaleEffect(x: 1, y: 0.3, anchor: .top)
-                        .tint(.blue)
-                        .opacity(loadingProgress > 0 ? 1 : 0)
-                        .animation(.easeOut(duration: 0.3), value: (loadingProgress > 0.1))
-                }
+                LoadingProgressView(loadingProgress: $loadingProgress)
                 
             }
             .frame(maxWidth:.infinity, maxHeight: .infinity)
@@ -241,6 +242,24 @@ struct ContentView: View {
     }
     
     //MARK: PRIVATE
+    private func getPseudoCode() async -> String {
+
+        var pseudoCode = ""
+
+        do {
+            
+            if (urlAddress.starts(with: "https://leetcode.com/problems/")) {
+                 pseudoCode = try await webStore.webView.evaluateJavaScript("""
+                    document.querySelector("div.view-lines[role=presentation]").innerText
+                """) as? String ?? ""
+            }
+            
+        } catch {
+        }
+
+        return pseudoCode
+    }
+    
     private func loadURL(){
         let _urlAddress = urlAddress;
         
@@ -264,6 +283,29 @@ struct ContentView: View {
     
     func goForward() {
         webStore.webView.goForward()
+    }
+    
+    struct LoadingProgressView: View {
+        
+        @Binding var loadingProgress:Double
+        
+        var body: some View {
+            #if DEBUG
+            let _ = Self._printChanges()
+            #endif
+
+            if (loadingProgress > 0) {
+           
+                ProgressView(value: loadingProgress)
+                    .progressViewStyle(.linear)
+                    .scaleEffect(x: 1, y: 0.3, anchor: .top)
+                    .tint(.blue)
+                    .opacity(loadingProgress > 0 ? 1 : 0)
+                    .animation(.easeOut(duration: 0.3), value: (loadingProgress > 0.1))
+
+            }
+
+        }
     }
         
     struct WebViewRepresentable: NSViewRepresentable {

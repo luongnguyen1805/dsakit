@@ -20,6 +20,7 @@
 		84B085B12F2A5A000060E272 /* Swift.zip in Resources */ = {isa = PBXBuildFile; fileRef = 84B085B02F2A59FF0060E272 /* Swift.zip */; };
 		84B131FB2F2B7420001932AB /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 84B131FA2F2B7420001932AB /* ZIPFoundation */; };
 		84B131FE2F2B7526001932AB /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 84B131FD2F2B7525001932AB /* SwiftSoup */; };
+		84D8D7A42F33306B006E3358 /* ViewLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8D7A32F33306B006E3358 /* ViewLog.swift */; };
 		84F6BB6A2F2C4F2500201E22 /* Prompt.md in Resources */ = {isa = PBXBuildFile; fileRef = 84F6BB692F2C4E6000201E22 /* Prompt.md */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 		84933D812F23B83E00A3509F /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		84B085AD2F2A54950060E272 /* Processor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Processor.swift; sourceTree = "<group>"; };
 		84B085B02F2A59FF0060E272 /* Swift.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = Swift.zip; sourceTree = "<group>"; };
+		84D8D7A32F33306B006E3358 /* ViewLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewLog.swift; sourceTree = "<group>"; };
 		84F6BB692F2C4E6000201E22 /* Prompt.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Prompt.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -151,6 +153,7 @@
 		84933D802F23B82E00A3509F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				84D8D7A32F33306B006E3358 /* ViewLog.swift */,
 				84933D812F23B83E00A3509F /* Color.swift */,
 			);
 			path = Utils;
@@ -296,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84B085AE2F2A54950060E272 /* Processor.swift in Sources */,
+				84D8D7A42F33306B006E3358 /* ViewLog.swift in Sources */,
 				84933D562F235FF500A3509F /* ContentView.swift in Sources */,
 				84933D822F23B83E00A3509F /* Color.swift in Sources */,
 				84933D582F235FF500A3509F /* ChallengeItem.swift in Sources */,

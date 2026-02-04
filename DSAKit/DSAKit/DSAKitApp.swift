@@ -32,6 +32,7 @@ struct DSAKitApp: App {
     var webStore = WebViewStore()
     
     var body: some Scene {
+        
         WindowGroup {
             ContentView(webStore: webStore)
                 .frame(minWidth: 500, minHeight: 500)

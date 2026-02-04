@@ -11,27 +11,206 @@ Your task is to output a **modified version of the SAME FILE**.
 
 1. **You MUST reproduce the entire file**
 2. **All code outside `action(onExit:)` MUST remain IDENTICAL, character-for-character**
-3. You may modify **ONLY the body of `action1(onExit:)`**
-4. If any code outside `action` is missing or altered, the output is INVALID
+3. You may modify **ONLY** the code between:
+
+   ```
+   // >>> EDITABLE START
+   // >>> EDITABLE END
+   ```
+   
+4. If any code outside the editable region is missing or altered, the output is **INVALID**
+5. Output **ONLY** Swift source code
+
+   * No markdown
+   * No explanations
 
 ---
 
-## Editable Region (ONLY)
+## Output Formatting Rules (CRITICAL)
 
-You may modify **ONLY** the section marked:
+You MUST output raw Swift source code only.
 
-```swift
-// >>> EDITABLE START
-// >>> EDITABLE END
+You MUST NOT:
+- Wrap the output in ``` or ```swift
+- Use any markdown code fences
+- Add language identifiers
+- Surround the code with backticks
+
+If any backticks appear in the output, the result is INVALID.
+
+---
+
+## Editable Region (OUTPUT-ONLY)
+
+The editable region is **OUTPUT ONLY**.
+
+* Do NOT place instructions here
+* Do NOT place pseudocode here
+* Only Swift code is allowed
+
+---
+
+## Priority Rule (CRITICAL)
+
+If **pseudocode is provided**, attempt to generate Swift code using the following priority order:
+
+1. **Logic-Preserving Repair Conversion** (preferred)
+2. **Legacy Stub Generation** (fallback)
+
+You must choose **exactly one**.
+
+---
+
+## Mode 1 — Pseudocode → Runnable Swift (Logic-Preserving Repair)
+
+Use this mode **ONLY IF** the pseudocode:
+
+* Describes executable logic
+* Clearly indicates algorithmic intent
+* Can be made runnable **without changing logic direction**
+
+### Repair Contract
+
+The pseudocode represents the **intended algorithmic idea**.
+
+You may **repair structural issues** required for compilation and execution, but you must **NOT change the logic direction**.
+
+---
+
+### ✅ Allowed Repairs (MINIMAL ONLY)
+
+You MAY:
+
+1. Fix inconsistent identifiers
+
+   * `h1` vs `head1`
+2. Make implicit steps explicit
+
+   * pointer advancement (`node = node.next`)
+   * loop termination implied by the pseudocode
+3. Translate informal notes into concrete syntax
+
+   * “if null, set to 0”
+   * “get integral only”
+4. Resolve ambiguous constructors or calls
+
+   * `node { value }` → `ListNode(value)`
+5. Add required variable declarations or types for compilation
+
+---
+
+### ❌ Forbidden Changes
+
+You must NOT:
+
+1. Change the algorithmic strategy
+2. Optimize or refactor
+3. Remove or reorder logical steps
+4. Add new data structures not implied
+5. Improve correctness beyond the pseudocode’s intent
+6. Add tests, logging, or scaffolding
+
+---
+
+### Logic Preservation Rule
+
+* Operation order must remain intact
+* Control-flow decisions must reflect original intent
+* Any repair must be the **smallest possible change** that enables execution
+
+If multiple repairs are possible:
+
+* Choose the **most literal** one
+
+---
+
+### Output Rules (Repair Mode)
+
+* Emit **only runnable Swift code**
+* Place **all generated code** strictly inside:
+
+  ```
+  // >>> EDITABLE START
+  // >>> EDITABLE END
+  ```
+  
+* Do NOT generate `Solution` wrappers
+* Sample input creation, execution, and output printing
+
+MUST follow the same structure as Legacy Stub Generation.
+
+* IMPORTANT:
+
+Even in Repair Mode, you MUST output the FULL `Global.swift` file.
+Only the contents between `// >>> EDITABLE START` and `// >>> EDITABLE END`
+may differ from the original input.
+
+---
+
+## Mode 2 — Legacy Stub Generation (Fallback)
+
+Use this mode **ONLY IF**:
+
+* Pseudocode is missing
+* OR pseudocode is contradictory
+* OR generating runnable code would require guessing or changing logic direction
+
+### Stub Behavior (UNCHANGED)
+
+Inside `// >>> EDITABLE START` and `// >>> EDITABLE END`:
+
+1. Define required data structures
+2. Create default sample input data
+3. Declare a `Solution` type with the correct method signature
+4. Provide a **STUB implementation only**
+
+   * Use `// TODO`
+   * Return a valid placeholder value
+5. Execute the solution with sample input
+6. Print the output
+
+This mode must preserve **existing test behavior**.
+
+---
+
+## Type Declaration Rules (Legacy Mode Only)
+
+* No type declarations inside `action`
+* All types must be declared at file scope
+* Default access control only
+* Helper types must appear above `class Global`
+
+---
+
+## Pseudocode Input (OPTIONAL — SOURCE OF INTENT)
+
+If present, the following pseudocode expresses the **algorithmic idea**:
+
+```
+{{PSEUDO_CODE}}
 ```
 
-Everything else is READ-ONLY.
+* Do NOT copy it verbatim
+* Do NOT improve the algorithm
+* Use it only to guide logic-preserving repair
+
+---
+
+## Input Delimiter Semantics (CRITICAL)
+
+Triple backticks (```) used in this prompt are for
+INPUT DELIMITING ONLY.
+
+They are NOT part of `Global.swift`.
+
+You MUST NOT reproduce any ``` characters
+that appear in this prompt.
 
 ---
 
 ## ORIGINAL FILE (INPUT — MUST BE REPRODUCED)
 
-Paste the full current `Global.swift` here, for example:
+Paste the full current contents of `Global.swift` below:
 
 ```
 class Global
@@ -60,67 +239,19 @@ class Global
 
 ---
 
-## What to generate INSIDE the editable region
+## Output Validation Checklist (IMPLICIT)
 
-Inside `// >>> EDITABLE START` and `// >>> EDITABLE END`:
+Before producing output, ensure:
 
-1. Define required data structures
-2. Create default sample input data
-3. Declare a `Solution` type with the correct method signature
-4. Provide a STUB implementation only
-   * Use `// TODO`
-   * Return a valid placeholder value
-5. Execute the solution with sample input
-6. Print the output
+* [ ] Entire file is reproduced
+* [ ] Only editable region changed
+* [ ] Logic direction preserved (if converting)
+* [ ] Stub behavior preserved (if fallback)
+* [ ] No text outside Swift source code
 
 ---
 
-## Type Declaration Rules (MANDATORY)
+### Mental Model (MANDATORY)
 
-* **NO type declarations are allowed inside `action`**
-* All structs, classes, enums, protocols, and typealiases MUST be declared at **file scope**
-* Do NOT use `public`, `open`, or `internal`
-* Use default access control only
-* Helper types MUST be declared **above `class Global`**
-* `action` may only contain:
-  * variable declarations
-  * sample data
-  * `Solution` instantiation
-  * method calls
-  * `print`
-  * `onExit()`
-
----
-## Constraints
-
-* DO NOT solve the problem
-* DO NOT include real algorithm logic
-* DO NOT use stdin, files, or network
-* DO NOT modify formatting, spacing, or prints
-* Code must compile and run locally
-
----
-
-## Output Rules (STRICT)
-
-* Output **ONLY the full Swift source code**
-* NO markdown
-* NO explanations
-* The output must be a drop-in replacement for `Global.swift`
-* **DO NOT** wrap code in `swift` or any markdown
-* The output must be **exactly what will be written to `Global.swift`**
-* The file must **compile and run immediately** on macOS using Swift
-
----
-
-## Problem Metadata
-
-Problem Source:
-{{PROBLEM_SOURCE}}
-
-Problem Title:
-{{PROBLEM_TITLE}}
-
-Problem Description:
-{{PROBLEM_DESCRIPTION}}
-
+> “I am not improving this algorithm.
+> I am only fixing what is necessary so it can run.”
